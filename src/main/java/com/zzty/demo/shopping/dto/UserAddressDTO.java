@@ -1,15 +1,15 @@
 package com.zzty.demo.shopping.dto;
 
 public class UserAddressDTO {
-	private int id;
+	private String id;
 	private String address;
 	private UserDTO user;
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

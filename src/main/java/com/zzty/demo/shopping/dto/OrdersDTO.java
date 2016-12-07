@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.zzty.demo.shopping.dao.UserDAO;
 
-public class Orders {
+public class OrdersDTO {
 	private String id;
 	private Date createDate;
 	private String address;

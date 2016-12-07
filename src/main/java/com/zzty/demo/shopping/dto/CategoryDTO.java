@@ -1,6 +1,6 @@
 package com.zzty.demo.shopping.dto;
 
-public class Category {
+public class CategoryDTO {
 	private String id;
 	private String name;
 

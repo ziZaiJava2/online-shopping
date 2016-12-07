@@ -13,7 +13,7 @@ public class UserAddressDAO {
 		try {
 			preState=SQLUtil.prepare(URL, sql);
 			preState.setString(1, userAddress.getAddress());
-			preState.setInt(2, userAddress.getUser().getId());
+			preState.setString(2, userAddress.getUser().getId());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
