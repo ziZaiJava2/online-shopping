@@ -15,7 +15,7 @@ public class UserAdressDAO {
     	String sql = "insert into user(address, user_id)values(?, ?)";
     	java.sql.PreparedStatement pst = con.prepareStatement(sql);
         pst.setString(1,userAdress.getAdress()); 
-        pst.setInt(2, userAdress.getUserId());
+        pst.setInt(2, userAdress.getUserId().getId());
        
         return pst.execute();
     }
@@ -26,7 +26,7 @@ public class UserAdressDAO {
             String sql = "update user_address set address = " + userAdress.getAdress() + "where id = " + userAdress.getId();
     	   return st.execute(sql);
     	}else{
-            String sql = "update user_address set user_id = " + userAdress.getUserId() + "where id = " + userAdress.getId();
+            String sql = "update user_address set user_id = " + userAdress.getUserId().getId() + "where id = " + userAdress.getId();
             return st.execute(sql);
     	}
      }
@@ -58,10 +58,10 @@ public class UserAdressDAO {
     	UserAdressDTO ua = null;
     	con = DBUtil.useMysql();
     	Statement st = con.createStatement();
-    	String sql = "select * from user where user.id = " +addressId;
+    	String sql = "select * from user_address where user.id = " +addressId;
     	ResultSet rs = st.executeQuery(sql);
     	ua.setAdress(rs.getString(2));
-    	ua.setUserId(rs.getInt(3));
+    	ua.getUserId().setId(rs.getInt(3));
     	
     	return ua;
     }

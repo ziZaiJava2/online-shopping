@@ -16,7 +16,7 @@ public class ProductionDAO {
     	String sql = "insert into user(name, description, original_price, price)values(?, ?, ?, ?)";
     	java.sql.PreparedStatement pst = con.prepareStatement(sql);
         pst.setString(1, production.getName()); 
-        pst.setString(2, production.getDecription();
+        pst.setString(2, production.getDecription());
         pst.setInt(3, production.getOriginalPrice());
         pst.setInt(4, production.getPrice());
         return pst.execute();
@@ -24,17 +24,17 @@ public class ProductionDAO {
     public boolean updateProduction(ProductionDTO production) throws ClassNotFoundException, SQLException{
     	con = DBUtil.useMysql();
     	Statement st = con.createStatement();
-    	if("".equals(production.getName()) && production.getName() != null ){
+    	if(!"".equals(production.getName()) && production.getName() != null ){
             String sql = "update prodcution set name = " + production.getName() + "where id = " + production.getId();
     	   return st.execute(sql);
-    	}else if("".equals(production.getDecription()) && production.getDecription() != null){
+    	}else if(!"".equals(production.getDecription()) && production.getDecription() != null){
             String sql = "update prodcution set description = " + production.getDecription() + "where id = " + production.getId();
             return st.execute(sql);
-    	}else if(){
-            String sql = 
+    	}else if(!"".equals(production.getOriginalPrice())){
+            String sql = "update production set original_price = " + production.getOriginalPrice() + "where id = " + production.getId();
             return st.execute(sql);
     	}else{
-            String sql = 
+            String sql = "update production set price = " + production.getPrice() + "where id = " + production.getId();
             return st.execute(sql);
     	}
      }
@@ -42,49 +42,44 @@ public class ProductionDAO {
     public boolean deleteProduction(ProductionDTO production) throws ClassNotFoundException, SQLException{
     	con = DBUtil.useMysql();
     	Statement st = con.createStatement();
-    	String sql = "delete from user where id = " + user.getId();
+    	String sql = "delete from production where id = " + production.getId();
     	return st.execute(sql);
     }
     
     public String getAllProduction() throws ClassNotFoundException, SQLException{
     	con = DBUtil.useMysql();
     	Statement st = con.createStatement();
-    	String sql = "select * from user";
+    	String sql = "select * from production";
     	ResultSet rs = st.executeQuery(sql);
-    	String loginName;
-    	int adressId;
-    	String nickName;
-    	String email;
-    	String password;
-    	String userMessage = "";
+    	String name;
+    	int original_price;
+    	String description;
+        int price;
+    	String message = "";
     	while(rs.next()){
-    		loginName = rs.getString(2);
-    		nickName = rs.getString(3);
-    		adressId = rs.getInt(4);
-    		email = rs.getString(5);
-    		password = rs.getString(6);
-    		userMessage +="loginName: " + loginName + " " + "nickName: " + nickName + " " + "adressId: " + adressId + " " + "email:" + email + "password: " + password + " " + "\n";
+    		name = rs.getString(2);
+    		description = rs.getString(3);
+    		original_price = rs.getInt(4);
+    		price = rs.getInt(5);
+    		
+    		message +="name: " + name + " " + "description: " + description + " " + "original_price: " + original_price + " " + "price:" + price + "\n";
     	}
-    	return userMessage;
+    	return message;
     }
     
-    public UserDTO getProduction(int userId) throws ClassNotFoundException, SQLException{
-    	UserDTO u = null;
-    	UserAdressDTO ua = null;
+    public ProductionDTO getProduction(int productionId) throws ClassNotFoundException, SQLException{
+    	ProductionDTO u = null;
+    	
     	con = DBUtil.useMysql();
     	Statement st = con.createStatement();
-    	String sql1 = "select * from user where user.id = " + userId;
-    	String sql2 = "selcet * from user_address where user_id = " + userId;
-    	ResultSet rs = st.executeQuery(sql1);
-    	ResultSet rs2 = st.executeQuery(sql2);
-    	u.setEmail(rs.getString(5));
-    	u.setLoginName(rs.getString(2));
-    	u.setNickName(rs.getString(3));
-    	u.setPassword(rs.getString(6));
-    	u.setId(rs.getInt(1));
-    	ua.setAdress(rs2.getString(1));
-    	ua.setUserId(rs.getInt(2));
-    	u.setUserAdress(ua);
+    	String sql = "select * from production where production_id = " + productionId;
+    	
+    	ResultSet rs = st.executeQuery(sql);
+    	
+    	u.setName(rs.getString(2));
+    	u.setDecription(rs.getString(3));
+    	u.setOriginalPrice(rs.getInt(4));
+    	u.setPrice(rs.getInt(5));
     	return u;
     }
 }

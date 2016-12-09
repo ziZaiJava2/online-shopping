@@ -87,7 +87,7 @@ public class UserDAO {
     	u.setPassword(rs.getString(6));
     	u.setId(rs.getInt(1));
     	ua.setAdress(rs2.getString(1));
-    	ua.setUserId(rs.getInt(2));
+    	ua.setUserId(u);
     	u.setUserAdress(ua);
     	return u;
     }
