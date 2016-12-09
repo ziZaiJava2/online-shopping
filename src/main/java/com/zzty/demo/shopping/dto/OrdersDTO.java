@@ -1,8 +1,7 @@
-package com.zzty.demo.shopping.dao;
+package com.zzty.demo.shopping.dto;
 
 import java.util.Date;
 
-import com.zzty.demo.shopping.dto.UserDTO;
 
 public class OrdersDTO {
 	private int id;

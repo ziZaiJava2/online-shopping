@@ -28,7 +28,23 @@ public class UserAddressDAO extends DAO {
 		}
 
 	}
-	public void deleteUserAddress(){
+	public void deleteUserAddress(int id) throws SQLException{
+		String sql="delete from user_address where id=?";
+		Connection connection=getConnection();
+		PreparedStatement preparedStatement=connection.prepareStatement(sql);
+		try {
+			preparedStatement.setInt(1, id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally{
+			preparedStatement.close();
+		}
+	}
+	public void updateUserAddress(String column) throws SQLException{
+		String sql="update user_address set "+column+"=? where id=?";
+		Connection connection=getConnection();
+		PreparedStatement preparedStatement=connection.prepareStatement(sql);
+		preparedStatement.setString(1, column);
 		
 	}
 	
