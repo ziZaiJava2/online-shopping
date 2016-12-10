@@ -5,16 +5,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.zzty.demo.shopping.dto.UserAddressDTO;
 import com.zzty.demo.shopping.dto.UserDTO;
 
-/** 
- * 这个类封装了所有跟user表相关数据库的操作
- * 一般来说包含基本的 对这张表的增删改查操作。 
- * 继承与DAO.class. 可以调用父类的getConnection()方法来获取 jdbc connection
- *  
+/**
+ * 这个类封装了所有跟user表相关数据库的操作 一般来说包含基本的 对这张表的增删改查操作。 继承与DAO.class.
+ * 可以调用父类的getConnection()方法来获取 jdbc connection
+ * 
  */
 public class UserDAO extends DAO {
 
@@ -23,25 +23,29 @@ public class UserDAO extends DAO {
 	}
 
 	/**
-	 *  根据给定的UserDTO对象 来把对象中对应的数据插入到数据表 user中
+	 * 根据给定的UserDTO对象 来把对象中对应的数据插入到数据表 user中
 	 */
 	public int addUser(UserDTO user) throws SQLException, ClassNotFoundException {
 		// 初始化一个变量来表示新插入到user表中的数据的id, 这个id会在插入userAddress信息的时候用到
 		// 因为还没有插入，所以初始化的值为 -1 防止跟正常值混淆
 		int newUserId = -1;
-		
+
 		String sql = "insert into users(login_name, nick_name, email, password) " + "values(?, ?, ?, ?)";
-		
+
 		// 通过调用父类的getConnection() 来获取一个jdbc connection
 		Connection connection = getConnection();
-		
-		// 创建PreparedStatement 这个写法跟我们之前教的不一样， 多了一个参数 Statement.RETURN_GENERATED_KEYS
-		// 加这个参数的原因是， 当我们插入新的user数据到user表中， user的id是自增的， 用这个参数我们后面可以在插入操作完成以后取到最新的id
+
+		// 创建PreparedStatement 这个写法跟我们之前教的不一样， 多了一个参数
+		// Statement.RETURN_GENERATED_KEYS
+		// 加这个参数的原因是， 当我们插入新的user数据到user表中， user的id是自增的，
+		// 用这个参数我们后面可以在插入操作完成以后取到最新的id
 		// 可以参考 http://lavasoft.blog.51cto.com/62575/238643/
 		PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 		try {
-			// 因为我们插入user信息到user表 中， 还需要把UserDTO中对应的 所有的UserAddressDTO 插入到user_address表中， 所以我们要用 transaction。 事务来控制。
-			// 一旦插入user数据 或者 user_address数据失败， 所有插入都不生效。 只有user和user_address数据都正常插入后才一起提交到数据库中
+			// 因为我们插入user信息到user表 中， 还需要把UserDTO中对应的 所有的UserAddressDTO
+			// 插入到user_address表中， 所以我们要用 transaction。 事务来控制。
+			// 一旦插入user数据 或者 user_address数据失败， 所有插入都不生效。
+			// 只有user和user_address数据都正常插入后才一起提交到数据库中
 			// 所以这里把connection的 autoCommit 设为false
 			connection.setAutoCommit(false);
 			preparedStatement.setString(1, user.getLoginName());
@@ -57,23 +61,28 @@ public class UserDAO extends DAO {
 				newUserId = generateKeyRs.getInt(1);
 			}
 
-			// user和userAddress是 1对多的情况， 所以UserDTO中会有一个 List<UserAddressDTO> 来保存这个user所有的地址
+			// user和userAddress是 1对多的情况， 所以UserDTO中会有一个 List<UserAddressDTO>
+			// 来保存这个user所有的地址
 			// 所以我们新增加一个用户的时候不止要把用户基本信息插入到 user表中，还要把用户的所有地址信息插入到 user_address表中
 			List<UserAddressDTO> userAddresses = user.getAddresses();
 			for (UserAddressDTO address : userAddresses) {
 				if (address != null) {
-					// user_address 表需要关联user id 所以这里要把插入user到数据库后最新生成的 userId设置给 UserAddressDTO中的 UserDTO
+					// user_address 表需要关联user id 所以这里要把插入user到数据库后最新生成的
+					// userId设置给 UserAddressDTO中的 UserDTO
 					user.setId(newUserId);
 					address.setUser(user);
 
 					UserAddressDAO userAddressDAO = new UserAddressDAO();
 					// 特别强调 ！！！！ 因为我们要用事务来保证 用户信息 和地址信息 同时正确的提交到数据库中，或者是同时失败都不提交
-					// 因为jdbc中connection来负责事务相关的操作。 当我们新实例化一个UserAddressDAO对象时， 会初始化一个新的Connection对象 
-					// 和UserDAO 实例化的 Connection 不是同一个对象， 
-					// 所以这里我们调用setConnection() 方法来把 UserDAO实例化的Connection设置到 UserAddressDAO中， 这样两个DAO对象都是用同一个 Connection
+					// 因为jdbc中connection来负责事务相关的操作。 当我们新实例化一个UserAddressDAO对象时，
+					// 会初始化一个新的Connection对象
+					// 和UserDAO 实例化的 Connection 不是同一个对象，
+					// 所以这里我们调用setConnection() 方法来把 UserDAO实例化的Connection设置到
+					// UserAddressDAO中， 这样两个DAO对象都是用同一个 Connection
 					userAddressDAO.setConnection(connection);
-					
-					// 调用UserAddressDAO 的addUserAddress()方法来把所有的地址信息 插入到user_address表中
+
+					// 调用UserAddressDAO 的addUserAddress()方法来把所有的地址信息
+					// 插入到user_address表中
 					userAddressDAO.addUserAddress(address);
 				}
 			}
@@ -88,6 +97,162 @@ public class UserDAO extends DAO {
 			connection.close();
 		}
 		return newUserId;
+	}
+
+	public boolean deleteUserById(int id) throws SQLException {
+		boolean result = false;
+		Connection connection = getConnection();
+		PreparedStatement preparedStatement1 = null;
+		PreparedStatement preparedStatement2 = null;
+		try {
+			connection.setAutoCommit(false);
+
+			String sql1 = "delete from user_address where user_id = " + id;
+			String sql2 = "delete from user where id = " + id;
+
+			preparedStatement1 = connection.prepareStatement(sql1);
+			preparedStatement2 = connection.prepareStatement(sql2);
+
+			preparedStatement1.execute();
+			preparedStatement2.execute();
+
+			connection.commit();
+
+			result = true;
+
+		} catch (SQLException e) {
+			connection.rollback();
+		} finally {
+			preparedStatement1.close();
+			preparedStatement1.close();
+			connection.close();
+		}
+		return result;
+	}
+
+	public UserDTO getUserById(int userId) throws SQLException {
+		UserDTO user = new UserDTO();
+		Connection connection = getConnection();
+		PreparedStatement p1 = null;
+		PreparedStatement p2 = null;
+		try {
+			connection.setAutoCommit(false);
+
+			String sql1 = "select * from user where id = " + userId;
+			String sql2 = "select * from user_address where user_id = " + userId;
+			p1 = connection.prepareStatement(sql1);
+			p2 = connection.prepareStatement(sql2);
+
+			ResultSet rs1 = p1.executeQuery();
+
+			while (rs1.next()) {
+				user.setId(rs1.getInt("id"));
+				user.setLoginName(rs1.getString("login_name"));
+				user.setNickName(rs1.getString("nick_name"));
+				user.setEmail(rs1.getString("email"));
+				user.setPassword(rs1.getString("password"));
+			}
+
+			ResultSet rs2 = p2.executeQuery();
+			List<UserAddressDTO> address = new ArrayList<UserAddressDTO>();
+			while (rs2.next()) {
+				UserAddressDTO userAddress = new UserAddressDTO();
+				userAddress.setAddress(rs2.getString("address"));
+				address.add(userAddress);
+			}
+			user.setAddresses(address);
+
+			connection.commit();
+		} catch (SQLException e) {
+			connection.rollback();
+		} finally {
+			p1.close();
+			p2.close();
+			connection.close();
+		}
+		return user;
+	}
+
+	public void updateUser(UserDTO user) throws SQLException {
+
+		String sql1 = "update user set login_name = ?, nick_name = ?,email = ?, password = ? where id = ?";
+		String sql2 = "delete from user_address where user_id = " + user.getId();
+		String sql3 = "insert into userAddress(address,user_id,is_default) values(?, ? ,?)";
+		Connection connect = getConnection();
+		PreparedStatement ps1 = null;
+		PreparedStatement ps2 = null;
+		PreparedStatement ps3 = null;
+		try {
+			connect.setAutoCommit(false);
+
+			ps1 = connect.prepareStatement(sql1);
+			ps1.setString(1, user.getNickName());
+			ps1.setString(2, user.getNickName());
+			ps1.setString(3, user.getEmail());
+			ps1.setString(4, user.getPassword());
+			ps1.setInt(5, user.getId());
+			ps1.execute();
+
+			ps2 = connect.prepareStatement(sql1);
+			ps2.execute(sql2);
+
+			List<UserAddressDTO> addressList = user.getAddresses();
+			for (UserAddressDTO address : addressList) {
+				ps3 = connect.prepareStatement(sql3);
+				ps3.setString(1, address.getAddress());
+				ps3.setInt(2, address.getId());
+				ps3.setBoolean(3, address.isDefault());
+
+				ps3.execute();
+			}
+
+			connect.commit();
+		} catch (SQLException e) {
+			connect.rollback();
+		} finally {
+			ps1.close();
+			ps2.close();
+			ps3.close();
+			connect.close();
+		}
+
+	}
+
+	public List<UserDTO> listUser() throws SQLException {
+		List<UserDTO> allUsers = new ArrayList<UserDTO>();
+		Connection connection = getConnection();
+		String sql = "select * from user";
+		PreparedStatement ps = null;
+		try {
+			ps = connection.prepareStatement(sql);
+
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				UserDTO user = new UserDTO();
+				user.setId(rs.getInt("id"));
+				user.setLoginName(rs.getString("login_name"));
+				user.setNickName(rs.getString("nick_name"));
+				user.setEmail(rs.getString("emil"));
+
+				String sql2 = "select * from user_address where id=?" + user.getId();
+				ResultSet rs2 = ps.executeQuery(sql2);
+				List<UserAddressDTO> addressList = new ArrayList<UserAddressDTO>();
+				while (rs2.next()) {
+					UserAddressDTO userAddress = new UserAddressDTO();
+					userAddress.setAddress(rs2.getString("address"));
+					addressList.add(userAddress);
+				}
+				user.setAddresses(addressList);
+				allUsers.add(user);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ps.close();
+			connection.close();
+		}
+
+		return allUsers;
 	}
 
 }
