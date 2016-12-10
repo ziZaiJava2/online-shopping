@@ -8,9 +8,6 @@ public class UserDTO {
 	private String nickName;
 	private String email;
 	private String password;
-	// 昨天漏讲了一部分， 只讲了defaultAddress 要转换为对应的对象。修改了表结构， 把user表中的defaultAddress字段删除掉了。
-	// 在user_address表中新加了字段 is_default来标识 是否为默认地址。
-	// user表和 user_address是一对多的关系， 所以UserDTO中应该有一个List 这个包含这个user所有的地址
 	private List<UserAddressDTO> addresses;
 
 	public int getId() {
