@@ -8,12 +8,12 @@
         http://www.springframework.org/schema/context/spring-context.xsd">
         
 	<context:component-scan base-package="com.zzty.demo.shopping">
-	</context:component-scan><!---->
+	</context:component-scan>
 	
-    <context:annotation-config/><!---->
+    <context:annotation-config/>
     
 	<bean id="userService" class="com.zzty.demo.shopping.service.UserService" />
     <bean id="dao" class="com.zzty.demo.shopping.dao.UserDAO" />
-	
-
+	<bean id="productionService" class="com.zzty.demo.shopping.service.ProductionService"/>
+    <bean id="productionDao" class="com.zzty.demo.shopping.dao.ProductionDAO" />
 </beans>
