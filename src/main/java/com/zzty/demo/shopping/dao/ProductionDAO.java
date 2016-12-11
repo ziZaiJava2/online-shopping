@@ -16,7 +16,7 @@ public class ProductionDAO extends DAO {
 		super();
 	}
 
-	public int addProduction(ProductionDTO production) throws SQLException {
+	public int addProduction(ProductionDTO production) throws SQLException, ClassNotFoundException {
 		int newId = -1;
 		Connection connection = getConnection();
 		PreparedStatement preparedStatement = null;
@@ -29,7 +29,9 @@ public class ProductionDAO extends DAO {
 			preparedStatement.setInt(4, production.getPrice());
 			preparedStatement.execute();
 			ResultSet generateKeyRs = preparedStatement.getGeneratedKeys();
-			newId = generateKeyRs.getInt(1);
+			while (generateKeyRs.next()) {
+				newId = generateKeyRs.getInt(1);
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -40,7 +42,7 @@ public class ProductionDAO extends DAO {
 		return newId;
 	}
 
-	public void deleteProduction(int id) throws SQLException {
+	public void deleteProduction(int id) throws SQLException, ClassNotFoundException {
 		Connection connection = getConnection();
 		PreparedStatement preparedStatement = null;
 		String sql = "delete from production where id =" + id;
@@ -56,7 +58,7 @@ public class ProductionDAO extends DAO {
 		}
 	}
 
-	public ProductionDTO getProductionById(int id) throws SQLException {
+	public ProductionDTO getProductionById(int id) throws SQLException, ClassNotFoundException {
 		ProductionDTO production = new ProductionDTO();
 		Connection connection = getConnection();
 		PreparedStatement preparedStatement = null;
@@ -81,7 +83,7 @@ public class ProductionDAO extends DAO {
 		return production;
 	}
 
-	public void updateProduction(ProductionDTO production) throws SQLException {
+	public void updateProduction(ProductionDTO production) throws SQLException, ClassNotFoundException {
 		Connection connection = getConnection();
 		PreparedStatement preparedStatement = null;
 		String sql = "update production set name=?,description=?,original_price=?,price=? where id=?";
@@ -101,7 +103,7 @@ public class ProductionDAO extends DAO {
 		}
 	}
 
-	public List<ProductionDTO> getAllProduction() throws SQLException {
+	public List<ProductionDTO> getAllProduction() throws SQLException, ClassNotFoundException {
 		List<ProductionDTO> productionList = new ArrayList<>();
 		Connection connection = getConnection();
 		PreparedStatement preparedStatement = null;

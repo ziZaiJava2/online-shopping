@@ -11,11 +11,10 @@
 	</context:component-scan>		
     <context:annotation-config/>
     
-	<bean id="userService" class="com.zzty.demo.shopping.service.UserService" >
-
-	</bean>
-	
-    <bean id="userDao" class="com.zzty.demo.shopping.dao.UserDAO" >
-	</bean>
-
+	<bean id="userService" class="com.zzty.demo.shopping.service.UserService" />
+    <bean id="userDao" class="com.zzty.demo.shopping.dao.UserDAO" />
+    <bean id="productionService" class="com.zzty.demo.shopping.service.ProductionService"/>
+	<bean id="productionDao" class= "com.zzty.demo.shopping.dao.ProductionDAO"/>
+	<bean id="cooperatorService" class="com.zzty.demo.shopping.service.CooperatorService"/>
+	<bean id="cooperatorDao" class="com.zzty.demo.shopping.dao.CooperatorDAO"/>
 </beans>

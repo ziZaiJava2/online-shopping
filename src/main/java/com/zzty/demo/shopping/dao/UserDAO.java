@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.zzty.demo.shopping.dto.OrdersDTO;
 import com.zzty.demo.shopping.dto.UserAddressDTO;
 import com.zzty.demo.shopping.dto.UserDTO;
 
@@ -52,6 +53,16 @@ public class UserDAO extends DAO {
 					userAddressDAO.addUserAddress(address);
 				}
 			}
+			List<OrdersDTO> orders = user.getOrders();
+			for (OrdersDTO ordersDTO : orders) {
+				if (orders != null) {
+					user.setId(newUserId);
+					ordersDTO.setUser(user);
+					OrdersDAO ordersDao = new OrdersDAO();
+					ordersDao.setConnection(connection);
+					ordersDao.addOrders(ordersDTO);
+				}
+			}
 
 			connection.commit();
 		} catch (SQLException e) {
@@ -63,7 +74,7 @@ public class UserDAO extends DAO {
 		return newUserId;
 	}
 
-	public boolean deleteUserById(int id) throws SQLException {
+	public boolean deleteUserById(int id) throws SQLException, ClassNotFoundException {
 		Connection connection = getConnection();
 		try {
 			connection.setAutoCommit(false);
@@ -72,11 +83,14 @@ public class UserDAO extends DAO {
 		}
 		String sql1 = "delete from user_address where user_id=" + id;
 		String sql2 = "delete from users where id=" + id;
+		String sql3 = "delete from orders where=" + id;
 		PreparedStatement preparedStatement = connection.prepareStatement(sql1);
 		PreparedStatement preparedStatement2 = connection.prepareStatement(sql2);
+		PreparedStatement preparedStatement3 = connection.prepareStatement(sql3);
 		try {
 			preparedStatement.execute();
 			preparedStatement2.execute();
+			preparedStatement3.execute();
 			connection.commit();
 		} catch (SQLException e) {
 			connection.rollback();
@@ -84,13 +98,14 @@ public class UserDAO extends DAO {
 		} finally {
 			preparedStatement.close();
 			preparedStatement2.close();
+			preparedStatement3.close();
 			connection.close();
 		}
 
 		return true;
 	}
 
-	public UserDTO getUserById(int userId) throws SQLException {
+	public UserDTO getUserById(int userId) throws SQLException, ClassNotFoundException {
 		UserDTO user = new UserDTO();
 		Connection connection = getConnection();
 		connection.setAutoCommit(false);
@@ -131,7 +146,7 @@ public class UserDAO extends DAO {
 		return user;
 	}
 
-	public void updateUser(UserDTO user) throws SQLException {
+	public void updateUser(UserDTO user) throws SQLException, ClassNotFoundException {
 		Connection connection = getConnection();
 		PreparedStatement preparedStatement = null;
 		PreparedStatement preparedStatement2 = null;
@@ -171,7 +186,7 @@ public class UserDAO extends DAO {
 		}
 	}
 
-	public List<UserDTO> getAllUser() throws SQLException {
+	public List<UserDTO> getAllUser() throws SQLException, ClassNotFoundException {
 		List<UserDTO> userList = new ArrayList<>();
 		Connection connection = getConnection();
 		String sql = "select * from users";

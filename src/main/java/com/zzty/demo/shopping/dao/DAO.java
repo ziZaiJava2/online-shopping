@@ -5,8 +5,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * ËùÓÐ DAOµÄ¸¸Àà£¬ ·â×°ÁË»ñÈ¡jdbc connectionµÄ²Ù×÷£¬ ÕâÑù×ÔÀà¾Í²»ÐèÒªÖØ¸´µÄÈ¥Ð´ÕâÐ©´úÂë£¬
- * Í¨¹ý getConnection() ¾Í¿ÉÒÔ»ñÈ¡Ò»¸öÐÂµÄjdbc connection
+ * ï¿½ï¿½ï¿½ï¿½ DAOï¿½Ä¸ï¿½ï¿½à£¬ ï¿½ï¿½×°ï¿½Ë»ï¿½È¡jdbc connectionï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í²ï¿½ï¿½ï¿½Òªï¿½Ø¸ï¿½ï¿½ï¿½È¥Ð´ï¿½ï¿½Ð©ï¿½ï¿½ï¿½ë£¬
+ * Í¨ï¿½ï¿½ getConnection() ï¿½Í¿ï¿½ï¿½Ô»ï¿½È¡Ò»ï¿½ï¿½ï¿½Âµï¿½jdbc connection
  *
  */
 public class DAO {
@@ -19,7 +19,11 @@ public class DAO {
 		connection = DriverManager.getConnection(url);
 	}
 
-	public Connection getConnection() {
+	public Connection getConnection() throws ClassNotFoundException, SQLException {
+		if(connection.isClosed()){
+			Class.forName("com.mysql.jdbc.Driver");
+			connection = DriverManager.getConnection(url);
+		}
 		return connection;
 	}
 

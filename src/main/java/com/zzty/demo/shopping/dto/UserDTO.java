@@ -9,6 +9,7 @@ public class UserDTO {
 	private String email;
 	private String password;
 	private List<UserAddressDTO> addresses;
+	private List<OrdersDTO> orders;
 
 	public int getId() {
 		return id;
@@ -57,4 +58,13 @@ public class UserDTO {
 	public void setAddresses(List<UserAddressDTO> addresses) {
 		this.addresses = addresses;
 	}
+
+	public List<OrdersDTO> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(List<OrdersDTO> orders) {
+		this.orders = orders;
+	}
+	
 }
