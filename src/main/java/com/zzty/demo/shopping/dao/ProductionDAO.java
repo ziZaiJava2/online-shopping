@@ -18,15 +18,15 @@ public class ProductionDAO extends DaoUtil {
 
 	public int addProduetion(ProductionDTO production) throws SQLException {
 		int newProductionId = -1;
-		String sql = "insert into production(name, description, original_price, price) " + "values(?, ?, ?, ?)";
+		String sql = "insert into production(name, description, original_price, price)values(?, ?, ?, ?)";
 		Connection connection = getConnection();
 		PreparedStatement preparedStatement = connection.prepareStatement(sql);
 		try {
 
 			preparedStatement.setString(1, production.getName());
-			preparedStatement.setString(1, production.getDescription());
-			preparedStatement.setString(1, production.getOriginal_price());
-			preparedStatement.setString(1, production.getPrice());
+			preparedStatement.setString(2, production.getDescription());
+			preparedStatement.setString(3, production.getOriginal_price());
+			preparedStatement.setString(4, production.getPrice());
 			preparedStatement.execute();
 			ResultSet generateKeyRs = preparedStatement.getGeneratedKeys();
 
