@@ -169,7 +169,7 @@ public class UserDAO extends DAO {
 		return result;
 	}
 
-	public UserDTO getUserById(int userId) throws SQLException  {
+	public UserDTO getUserById(int userId) throws SQLException {
 		UserDTO user = new UserDTO();
 		Connection conn = getConnection();
 
@@ -202,6 +202,91 @@ public class UserDAO extends DAO {
 		}
 
 		return user;
+	}
+
+	public void updateUser(UserDTO user) throws SQLException {
+
+		String sql1 = "update user set login_name=?, nick_name=?, email=?, password=? where id=?";
+		String sql2 = "delete user_address where user_id=" + user.getId();
+		String sql3 = "insert into user_address(address, user_id, is_default) values(?,?,?)";
+
+		Connection conn = getConnection();
+		PreparedStatement ps1 = null;
+		PreparedStatement ps2 = null;
+		PreparedStatement ps3 = null;
+
+		try {
+			conn.setAutoCommit(false);
+
+			ps1 = conn.prepareStatement(sql1);
+			ps1.setString(1, user.getLoginName());
+			ps1.setString(2, user.getNickName());
+			ps1.setString(3, user.getEmail());
+			ps1.setString(4, user.getPassword());
+			ps1.setInt(5, user.getId());
+			ps1.execute();
+
+			ps2 = conn.prepareStatement(sql2);
+			List<UserAddressDTO> addressList = user.getAddresses();
+			for (UserAddressDTO addresses : addressList) {
+				ps3 = conn.prepareStatement(sql3);
+				ps3.setString(1, addresses.getAddress());
+				ps3.setInt(2, user.getId());
+				ps3.setBoolean(3, addresses.isDefault());
+				ps3.execute();
+			}
+			conn.commit();
+		} catch (SQLException e) {
+			conn.rollback();
+			e.printStackTrace();
+		} finally {
+			conn.close();
+			ps1.close();
+			ps2.close();
+			ps3.close();
+		}
+		// update user base user info
+		// update user addresses 1.delete origin 2.insert new address
+	}
+
+	public List<UserDTO> getUserList() throws SQLException {
+		List<UserDTO> userList = new ArrayList<UserDTO>();
+		Connection conn = getConnection();
+
+		String sql1 = "select * from user";
+		PreparedStatement pst1 = null;
+		PreparedStatement pst2 = null;
+		try {
+			pst1 = conn.prepareStatement(sql1);
+			ResultSet rs = pst1.executeQuery();
+			while (rs.next()) {
+				UserDTO user = new UserDTO();
+				user.setId(rs.getInt("id"));
+				user.setLoginName(rs.getString("login_name"));
+				user.setNickName(rs.getString("nick_name"));
+				user.setEmail(rs.getString("email"));
+				user.setPassword(rs.getString("password"));
+
+				String sql2 = "select * from user_address where id=" + user.getId();
+				pst2 = conn.prepareStatement(sql2);
+				ResultSet rs2 = pst2.executeQuery(sql2);
+				List<UserAddressDTO> addressList = new ArrayList<UserAddressDTO>();
+				while (rs2.next()) {
+					UserAddressDTO address = new UserAddressDTO();
+					address.setAddress(rs.getString("address"));
+					addressList.add(address);
+				}
+				user.setAddresses(addressList);
+				userList.add(user);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+			pst1.close();
+			pst2.close();
+		}
+		return userList;
 	}
 
 }
