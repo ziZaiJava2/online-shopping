@@ -49,22 +49,25 @@ public class Assss {
 		try (InputStream input = new FileInputStream(Paths.get("./src/main/java/com/exercise/io/Assss.java").toFile());
 				Reader reader = new InputStreamReader(input, Charset.defaultCharset());
 				BufferedReader bf = new BufferedReader(reader);
-				OutputStream os = new FileOutputStream(new File("./newTest3.log"), true);
+
+				OutputStream os = new FileOutputStream(new File("./newTest2.log"), true);
 				Writer writer = new OutputStreamWriter(os);
 				BufferedWriter bw = new BufferedWriter(writer)) {
 			String line = null;
+			String a = "";
 			while ((line = bf.readLine()) != null) {
-				line = line + "\n";
-				bw.write(line);
+				a = a + "\n" + line;
+				System.out.println(line);
 			}
+			bw.write(a);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	public static void main(String[] args) {
-		// printSelf1();
-		// printSelf2();
-		printSelf3();
+//		printSelf1();
+		 printSelf2();
+		// printSelf3();
 	}
 }
