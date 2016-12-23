@@ -49,13 +49,12 @@ public class Assss {
 		try (InputStream input = new FileInputStream(Paths.get("./src/main/java/com/exercise/io/Assss.java").toFile());
 				Reader reader = new InputStreamReader(input, Charset.defaultCharset());
 				BufferedReader bf = new BufferedReader(reader);
-
 				OutputStream os = new FileOutputStream(new File("./newTest3.log"), true);
 				Writer writer = new OutputStreamWriter(os);
 				BufferedWriter bw = new BufferedWriter(writer)) {
-			String line = "";
-			while ((line = bf.readLine()) != null ) {
-				line = line +"\n";
+			String line = null;
+			while ((line = bf.readLine()) != null) {
+				line = line + "\n";
 				bw.write(line);
 			}
 		} catch (Exception e) {

@@ -1,31 +1,24 @@
 package com.concurrent;
 
-import java.util.concurrent.Callable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class Task implements Callable<Integer> {
-
+public class Task implements Runnable{
+	public static final Logger logger = LoggerFactory.getLogger(Main.class);
+	private int ticket = 5;
 	@Override
-	public Integer call() throws Exception {
-		Thread.sleep(1000);
-		return 10;
+	public void run() {
+		for(int i = 0; i < ticket ; i++){
+			synchronized(this){
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.out.println("³µÆ±£º" + ticket--);
+				logger.info("count of ticket  {} ", ticket);
+			}
+		}
 	}
-
-//	private static final Logger logger = LoggerFactory.getLogger(Main.class);
-//	public static int count = 0;
-//	
-//	@Override
-//	public void run() {
-//
-//		for(int i = 0; i < 100; i++){
-////			logger.info("index of count "+ count);
-////			increase();
-//			count = count +1;
-//
-//		}
-//	}
-	//  Ëø£¡£¡£¡
-//	public static synchronized void increase() {
-//		count = count +1;
-//	}
 
 }
