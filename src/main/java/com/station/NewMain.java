@@ -17,7 +17,7 @@ public class NewMain {
 		logger.info("count of allTickets {} ", allTickets);
 	}
 
-	public static int allTickets = 50;
+	public static int allTickets = 10;
 
 	public static Passager passager;
 
@@ -38,22 +38,24 @@ public class NewMain {
 					if (allTickets <= 0) {
 						temp = false;
 					}
-					synchronized (NewMain.class) {
 						if (line1.size() < line2.size()) {
 							passager = new Passager();
-							line1.add(passager);
+							synchronized (line1) {
+								line1.add(passager);
+							}
 							System.out.println(passager.getName() + "加入了line1");
 						} else {
 							passager = new Passager();
-							line2.add(passager);
+							synchronized (line2) {
+								line2.add(passager);
+							}
 							System.out.println(passager.getName() + "加入了line2");
 						}
 						try {
-							Thread.sleep(200);
+							Thread.sleep(1000);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-					}
 				}
 			}
 		});
@@ -71,8 +73,13 @@ public class NewMain {
 						}
 						if (!line1.isEmpty()) {
 							sellTicket();
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 							System.out.println(line1.get(0).getName() + "在line1买到了票，然后走了");
-							synchronized (this) {
+							synchronized (line1) {
 								line1.remove(0);
 							}
 						}
@@ -94,7 +101,7 @@ public class NewMain {
 								e.printStackTrace();
 							}
 							System.out.println(line2.get(0).getName() + "在line2买到了票，然后走了");
-							synchronized (this) {
+							synchronized (line2) {
 								line2.remove(0);
 							}
 						}
